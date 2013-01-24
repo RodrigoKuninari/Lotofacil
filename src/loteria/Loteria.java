@@ -6,8 +6,14 @@ package loteria;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.JOptionPane;
+import javax.swing.SwingWorker;
 
 /**
  *
@@ -16,12 +22,17 @@ import javax.swing.JOptionPane;
 public class Loteria extends javax.swing.JFrame
 {
 
+    private List<String> numSorteados = new ArrayList<>();
+
+    List<String[]> numJogados = new ArrayList<String[]>();
+
     /**
      * Creates new form Loteria
      */
     public Loteria()
     {
         initComponents();
+        progress.setVisible(false);
     }
 
     /**
@@ -56,7 +67,7 @@ public class Loteria extends javax.swing.JFrame
         n15 = new javax.swing.JComboBox();
         buttonVisualizar = new javax.swing.JButton();
         buttonConferir = new javax.swing.JButton();
-        barraProgresso = new javax.swing.JProgressBar();
+        progress = new javax.swing.JProgressBar();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Lotofácil");
@@ -174,6 +185,13 @@ public class Loteria extends javax.swing.JFrame
         });
 
         buttonConferir.setText("Conferir Resultados");
+        buttonConferir.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                buttonConferirActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout painelLayout = new javax.swing.GroupLayout(painel);
         painel.setLayout(painelLayout);
@@ -191,10 +209,9 @@ public class Loteria extends javax.swing.JFrame
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(painelLayout.createSequentialGroup()
                         .addComponent(buttonVisualizar)
-                        .addGap(18, 18, 18)
-                        .addComponent(barraProgresso, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                        .addGap(18, 18, 18)
-                        .addComponent(buttonConferir)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(buttonConferir))
+                    .addComponent(progress, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         painelLayout.setVerticalGroup(
@@ -209,11 +226,11 @@ public class Loteria extends javax.swing.JFrame
                 .addGap(18, 18, 18)
                 .addComponent(painelNumeros, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addGroup(painelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(barraProgresso, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(painelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(buttonVisualizar)
-                        .addComponent(buttonConferir)))
+                .addGroup(painelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(buttonVisualizar)
+                    .addComponent(buttonConferir))
+                .addGap(18, 18, 18)
+                .addComponent(progress, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -223,8 +240,8 @@ public class Loteria extends javax.swing.JFrame
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(painel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(painel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -241,6 +258,29 @@ public class Loteria extends javax.swing.JFrame
     {//GEN-HEADEREND:event_buttonVisualizarActionPerformed
         JOptionPane.showMessageDialog(null, visualizarJogos(), "Lista de Jogos", JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_buttonVisualizarActionPerformed
+
+    private void buttonConferirActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_buttonConferirActionPerformed
+    {//GEN-HEADEREND:event_buttonConferirActionPerformed
+        SwingWorker worker = new SwingWorker()
+        {
+            @Override
+            protected Object doInBackground() throws Exception
+            {
+                progress.setVisible(true);
+                progress.setIndeterminate(true);
+                exibirResultado();
+                progress.setVisible(false);
+                return null;
+            }
+
+            @Override
+            protected void done()
+            {
+                //barra.setVisible(false);
+            }
+        };
+        worker.execute();
+    }//GEN-LAST:event_buttonConferirActionPerformed
 
     /**
      * @param args the command line arguments
@@ -291,6 +331,159 @@ public class Loteria extends javax.swing.JFrame
         });
     }
 
+    private void exibirResultado() throws FileNotFoundException, IOException
+    {
+        numSorteados.clear();
+        if (validarCampos() == true)
+        {
+            if (validarNumerosRepetidos() == true)
+            {
+                numJogados.clear();
+                carregarJogos();
+                String resultado = conferirResultados();
+                resultado = resultado.substring(4);
+                gravarArquivo(resultado);
+                System.out.println("\n\n");
+                System.out.println(resultado);
+            }
+            else
+            {
+                JOptionPane.showMessageDialog(null, "Favor selecionar Números distintos", "Existem Números Repetidos", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+        else
+        {
+            JOptionPane.showMessageDialog(null, "Favor selecionar todos o Números", "Favor selecionar todos o Números", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void gravarArquivo(String conteudo) throws FileNotFoundException, IOException
+    {
+        File arquivo;
+        arquivo = new File("resultado.txt");
+        try (FileOutputStream fos = new FileOutputStream(arquivo))
+        {
+            fos.write(conteudo.getBytes());
+        }
+    }
+
+    private String conferirResultados()
+    {
+        String resultado = null;
+        int numJogo = 1;
+        int acertos = 0;
+        for (String[] n : numJogados)
+        {
+            for (int i = 0; i < n.length; i++)
+            {
+                int x = Integer.valueOf(n[i]);
+                for (String sorteado : numSorteados)
+                {
+                    int y = Integer.valueOf(sorteado);
+                    if (x == y)
+                    {
+                        acertos++;
+                    }
+                }
+            }
+            System.out.println("Jogo " + numJogo + ": " + n[0] + "," + n[1] + "," + n[2] + "," + n[3] + "," + n[4] + ","
+                               + n[5] + "," + n[6] + "," + n[7] + "," + n[8] + "," + n[9] + ","
+                               + n[10] + "," + n[11] + "," + n[12] + "," + n[13] + "," + n[14]
+                               + " - Acertos: " + acertos);
+            resultado = resultado + "Jogo " + numJogo + ": " + n[0] + "," + n[1] + "," + n[2] + "," + n[3] + "," + n[4] + ","
+                        + n[5] + "," + n[6] + "," + n[7] + "," + n[8] + "," + n[9] + ","
+                        + n[10] + "," + n[11] + "," + n[12] + "," + n[13] + "," + n[14]
+                        + " - Acertos: " + acertos + "\n";
+            numJogo++;
+            acertos = 0;
+        }
+        return resultado;
+    }
+
+    private void carregarJogos()
+    {
+        String linha = null;
+
+        try
+        {
+            File arquivo;
+            arquivo = new File(getClass().getResource("/resources/lotofacil.txt").toURI());
+            try (FileReader reader = new FileReader(arquivo); BufferedReader leitor = new BufferedReader(reader))
+            {
+                while ((linha = leitor.readLine()) != null)
+                {
+                    String[] jogo = linha.split(",");
+                    numJogados.add(jogo);
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    private boolean validarNumerosRepetidos()
+    {
+        for (int i = 0; i < numSorteados.size(); i++)
+        {
+            int n = Integer.valueOf(numSorteados.get(i));
+            for (int j = i + 1; j < numSorteados.size(); j++)
+            {
+                if (n == Integer.valueOf(numSorteados.get(j)))
+                {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    private boolean validarCampos()
+    {
+        String num1 = n1.getSelectedItem().toString();
+        String num2 = n2.getSelectedItem().toString();
+        String num3 = n3.getSelectedItem().toString();
+        String num4 = n4.getSelectedItem().toString();
+        String num5 = n5.getSelectedItem().toString();
+        String num6 = n6.getSelectedItem().toString();
+        String num7 = n7.getSelectedItem().toString();
+        String num8 = n8.getSelectedItem().toString();
+        String num9 = n9.getSelectedItem().toString();
+        String num10 = n10.getSelectedItem().toString();
+        String num11 = n11.getSelectedItem().toString();
+        String num12 = n12.getSelectedItem().toString();
+        String num13 = n13.getSelectedItem().toString();
+        String num14 = n14.getSelectedItem().toString();
+        String num15 = n15.getSelectedItem().toString();
+
+        if (num1.isEmpty() || num2.isEmpty() || num3.isEmpty() || num4.isEmpty() || num5.isEmpty()
+            || num6.isEmpty() || num7.isEmpty() || num8.isEmpty() || num9.isEmpty() || num10.isEmpty()
+            || num11.isEmpty() || num12.isEmpty() || num13.isEmpty() || num14.isEmpty() || num15.isEmpty())
+        {
+            return false;
+        }
+        else
+        {
+            numSorteados.add(num1);
+            numSorteados.add(num2);
+            numSorteados.add(num3);
+            numSorteados.add(num4);
+            numSorteados.add(num5);
+            numSorteados.add(num6);
+            numSorteados.add(num7);
+            numSorteados.add(num8);
+            numSorteados.add(num9);
+            numSorteados.add(num10);
+            numSorteados.add(num11);
+            numSorteados.add(num12);
+            numSorteados.add(num13);
+            numSorteados.add(num14);
+            numSorteados.add(num15);
+            return true;
+        }
+    }
+
     private String visualizarJogos()
     {
         String linha = null;
@@ -303,9 +496,10 @@ public class Loteria extends javax.swing.JFrame
             try (FileReader reader = new FileReader(arquivo); BufferedReader leitor = new BufferedReader(reader))
             {
                 jogos = leitor.readLine();
+                jogos = jogos + "          " + leitor.readLine();
                 while ((linha = leitor.readLine()) != null)
                 {
-                    jogos = jogos + "\n" + linha;
+                    jogos = jogos + "\n" + linha + "          " + leitor.readLine();
                 }
             }
             return jogos + "\n";
@@ -317,7 +511,6 @@ public class Loteria extends javax.swing.JFrame
         return jogos;
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JProgressBar barraProgresso;
     private javax.swing.JButton buttonConferir;
     private javax.swing.JButton buttonVisualizar;
     private javax.swing.JLabel jLabel1;
@@ -340,5 +533,6 @@ public class Loteria extends javax.swing.JFrame
     private javax.swing.JComboBox n9;
     private javax.swing.JPanel painel;
     private javax.swing.JPanel painelNumeros;
+    private javax.swing.JProgressBar progress;
     // End of variables declaration//GEN-END:variables
 }
