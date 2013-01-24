@@ -345,6 +345,7 @@ public class Loteria extends javax.swing.JFrame
                 gravarArquivo(resultado);
                 System.out.println("\n\n");
                 System.out.println(resultado);
+                JOptionPane.showMessageDialog(null, "Os Jogos foram conferidos e foi criado o arquivo resultado.txt contendo os resultados.", "Jogos Conferidos com Sucesso!", JOptionPane.INFORMATION_MESSAGE);
             }
             else
             {
@@ -407,7 +408,8 @@ public class Loteria extends javax.swing.JFrame
         try
         {
             File arquivo;
-            arquivo = new File(getClass().getResource("/resources/lotofacil.txt").toURI());
+            //arquivo = new File(getClass().getResource("/resources/lotofacil.txt").toURI());
+            arquivo = new File("lotofacil.txt");
             try (FileReader reader = new FileReader(arquivo); BufferedReader leitor = new BufferedReader(reader))
             {
                 while ((linha = leitor.readLine()) != null)
@@ -492,7 +494,8 @@ public class Loteria extends javax.swing.JFrame
         try
         {
             File arquivo;
-            arquivo = new File(getClass().getResource("/resources/lotofacil.txt").toURI());
+            //arquivo = new File(getClass().getResource("/resources/lotofacil.txt").toURI());
+            arquivo = new File("lotofacil.txt");
             try (FileReader reader = new FileReader(arquivo); BufferedReader leitor = new BufferedReader(reader))
             {
                 jogos = leitor.readLine();
