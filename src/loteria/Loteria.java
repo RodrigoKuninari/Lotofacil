@@ -12,6 +12,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 
@@ -22,7 +24,7 @@ import javax.swing.SwingWorker;
 public class Loteria extends javax.swing.JFrame
 {
 
-    private List<String> numSorteados = new ArrayList<>();
+    private List<String> numSorteados = new ArrayList<String>();
 
     List<String[]> numJogados = new ArrayList<String[]>();
 
@@ -256,7 +258,18 @@ public class Loteria extends javax.swing.JFrame
 
     private void buttonVisualizarActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_buttonVisualizarActionPerformed
     {//GEN-HEADEREND:event_buttonVisualizarActionPerformed
-        JOptionPane.showMessageDialog(null, visualizarJogos(), "Lista de Jogos", JOptionPane.INFORMATION_MESSAGE);
+        try
+        {
+            JOptionPane.showMessageDialog(null, visualizarJogos(), "Lista de Jogos", JOptionPane.INFORMATION_MESSAGE);
+        }
+        catch (FileNotFoundException ex)
+        {
+            Logger.getLogger(Loteria.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        catch (IOException ex)
+        {
+            Logger.getLogger(Loteria.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_buttonVisualizarActionPerformed
 
     private void buttonConferirActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_buttonConferirActionPerformed
@@ -362,10 +375,8 @@ public class Loteria extends javax.swing.JFrame
     {
         File arquivo;
         arquivo = new File("resultado.txt");
-        try (FileOutputStream fos = new FileOutputStream(arquivo))
-        {
-            fos.write(conteudo.getBytes());
-        }
+        FileOutputStream fos = new FileOutputStream(arquivo);
+        fos.write(conteudo.getBytes());
     }
 
     private String conferirResultados()
@@ -401,27 +412,20 @@ public class Loteria extends javax.swing.JFrame
         return resultado;
     }
 
-    private void carregarJogos()
+    private void carregarJogos() throws FileNotFoundException, IOException
     {
         String linha = null;
 
-        try
+
+        File arquivo;
+        //arquivo = new File(getClass().getResource("/resources/lotofacil.txt").toURI());
+        arquivo = new File("lotofacil.txt");
+        FileReader reader = new FileReader(arquivo);
+        BufferedReader leitor = new BufferedReader(reader);
+        while ((linha = leitor.readLine()) != null)
         {
-            File arquivo;
-            //arquivo = new File(getClass().getResource("/resources/lotofacil.txt").toURI());
-            arquivo = new File("lotofacil.txt");
-            try (FileReader reader = new FileReader(arquivo); BufferedReader leitor = new BufferedReader(reader))
-            {
-                while ((linha = leitor.readLine()) != null)
-                {
-                    String[] jogo = linha.split(",");
-                    numJogados.add(jogo);
-                }
-            }
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
+            String[] jogo = linha.split(",");
+            numJogados.add(jogo);
         }
     }
 
@@ -486,32 +490,26 @@ public class Loteria extends javax.swing.JFrame
         }
     }
 
-    private String visualizarJogos()
+    private String visualizarJogos() throws FileNotFoundException, IOException
     {
         String linha = null;
         String jogos = null;
 
-        try
+
+        File arquivo;
+        //arquivo = new File(getClass().getResource("/resources/lotofacil.txt").toURI());
+        arquivo = new File("lotofacil.txt");
+        FileReader reader = new FileReader(arquivo);
+        BufferedReader leitor = new BufferedReader(reader);
+        jogos = leitor.readLine();
+        jogos = jogos + "          " + leitor.readLine();
+        while ((linha = leitor.readLine()) != null)
         {
-            File arquivo;
-            //arquivo = new File(getClass().getResource("/resources/lotofacil.txt").toURI());
-            arquivo = new File("lotofacil.txt");
-            try (FileReader reader = new FileReader(arquivo); BufferedReader leitor = new BufferedReader(reader))
-            {
-                jogos = leitor.readLine();
-                jogos = jogos + "          " + leitor.readLine();
-                while ((linha = leitor.readLine()) != null)
-                {
-                    jogos = jogos + "\n" + linha + "          " + leitor.readLine();
-                }
-            }
-            return jogos + "\n";
+            jogos = jogos + "\n" + linha + "          " + leitor.readLine();
         }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-        return jogos;
+
+        return jogos + "\n";
+
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton buttonConferir;
