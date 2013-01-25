@@ -61,7 +61,9 @@
                       </Group>
                       <Group type="102" alignment="0" attributes="0">
                           <Component id="buttonVisualizar" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace max="32767" attributes="0"/>
+                          <EmptySpace type="separate" max="-2" attributes="0"/>
+                          <Component id="buttonMaisJogados" max="32767" attributes="0"/>
+                          <EmptySpace type="separate" max="-2" attributes="0"/>
                           <Component id="buttonConferir" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <Component id="progress" alignment="0" max="32767" attributes="0"/>
@@ -85,6 +87,7 @@
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="buttonVisualizar" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="buttonConferir" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="buttonMaisJogados" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace type="separate" max="-2" attributes="0"/>
                   <Component id="progress" min="-2" pref="29" max="-2" attributes="0"/>
@@ -719,6 +722,14 @@
           </Events>
         </Component>
         <Component class="javax.swing.JProgressBar" name="progress">
+        </Component>
+        <Component class="javax.swing.JButton" name="buttonMaisJogados">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Mais Jogados"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonMaisJogadosActionPerformed"/>
+          </Events>
         </Component>
       </SubComponents>
     </Container>

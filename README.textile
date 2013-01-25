@@ -1,0 +1,24 @@
+h1. *Lotofácil*
+
+h2. _Descrição_
+
+Lotofácil é uma simples aplicação com o objetivo de auxiliar na conferência do jogo Lotérico Lotofácil.
+Além disso, exibe quais foram os seus números mais jogados.
+
+h2. _Tecnologias/Linguagens Utilizadas_
+
+* IDE: NetBeans  7.2.1
+* Plataforma: Java
+
+h2. _Frameworks_
+
+h2. _Funcionamento_
+
+Para utilizar o Lotofacil, é necessário criar um arquivo com o nome "lotofacil.txt" e deixá-lo no mesmo diretório da aplicação.
+Esse arquivo deve ser formato da seguinte maneira:
+* Cada linha contém um jogo.
+* Cada jogo é composto por números separados por vírgulas.
+* Exemplo:
+1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
+6,7,8,9,10,11,12,13,14,15,16,17,18,19,20
+11,12,13,14,15,16,17,18,19,20,21,22,23,24,25

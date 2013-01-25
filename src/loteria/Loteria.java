@@ -70,6 +70,7 @@ public class Loteria extends javax.swing.JFrame
         buttonVisualizar = new javax.swing.JButton();
         buttonConferir = new javax.swing.JButton();
         progress = new javax.swing.JProgressBar();
+        buttonMaisJogados = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Lotofácil");
@@ -195,6 +196,15 @@ public class Loteria extends javax.swing.JFrame
             }
         });
 
+        buttonMaisJogados.setText("Mais Jogados");
+        buttonMaisJogados.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                buttonMaisJogadosActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout painelLayout = new javax.swing.GroupLayout(painel);
         painel.setLayout(painelLayout);
         painelLayout.setHorizontalGroup(
@@ -211,7 +221,9 @@ public class Loteria extends javax.swing.JFrame
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(painelLayout.createSequentialGroup()
                         .addComponent(buttonVisualizar)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(18, 18, 18)
+                        .addComponent(buttonMaisJogados, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(18, 18, 18)
                         .addComponent(buttonConferir))
                     .addComponent(progress, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
@@ -230,7 +242,8 @@ public class Loteria extends javax.swing.JFrame
                 .addGap(18, 18, 18)
                 .addGroup(painelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(buttonVisualizar)
-                    .addComponent(buttonConferir))
+                    .addComponent(buttonConferir)
+                    .addComponent(buttonMaisJogados))
                 .addGap(18, 18, 18)
                 .addComponent(progress, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -295,6 +308,24 @@ public class Loteria extends javax.swing.JFrame
         worker.execute();
     }//GEN-LAST:event_buttonConferirActionPerformed
 
+    private void buttonMaisJogadosActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_buttonMaisJogadosActionPerformed
+    {//GEN-HEADEREND:event_buttonMaisJogadosActionPerformed
+        try
+        {
+            String resultado = verificarMaisJogados();
+            resultado = resultado.substring(4);
+            JOptionPane.showMessageDialog(null, resultado, "Seus Números mais Jogados!", JOptionPane.INFORMATION_MESSAGE);
+        }
+        catch (FileNotFoundException ex)
+        {
+            Logger.getLogger(Loteria.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        catch (IOException ex)
+        {
+            Logger.getLogger(Loteria.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_buttonMaisJogadosActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -342,6 +373,35 @@ public class Loteria extends javax.swing.JFrame
                 new Loteria().setVisible(true);
             }
         });
+    }
+
+    private String verificarMaisJogados() throws FileNotFoundException, IOException
+    {
+        String maisJogados = null;
+        String linha = null;
+        int resultado[] = new int[26];
+
+        for (int i = 0; i < resultado.length; i++)
+        {
+            resultado[i] = 0;
+        }
+        BufferedReader leitor = lerArquivo();
+        while ((linha = leitor.readLine()) != null)
+        {
+            String[] numeros = linha.split(",");
+            for (int i = 0; i < numeros.length; i++)
+            {
+                int numero = Integer.valueOf(numeros[i]);
+                resultado[numero] = resultado[numero] + 1;
+            }
+
+        }
+
+        for (int i = 1; i < resultado.length; i++)
+        {
+            maisJogados = maisJogados + i + " = " + resultado[i] + " Vezes\n";
+        }
+        return maisJogados;
     }
 
     private void exibirResultado() throws FileNotFoundException, IOException
@@ -415,13 +475,7 @@ public class Loteria extends javax.swing.JFrame
     private void carregarJogos() throws FileNotFoundException, IOException
     {
         String linha = null;
-
-
-        File arquivo;
-        //arquivo = new File(getClass().getResource("/resources/lotofacil.txt").toURI());
-        arquivo = new File("lotofacil.txt");
-        FileReader reader = new FileReader(arquivo);
-        BufferedReader leitor = new BufferedReader(reader);
+        BufferedReader leitor = lerArquivo();
         while ((linha = leitor.readLine()) != null)
         {
             String[] jogo = linha.split(",");
@@ -494,25 +548,28 @@ public class Loteria extends javax.swing.JFrame
     {
         String linha = null;
         String jogos = null;
-
-
-        File arquivo;
-        //arquivo = new File(getClass().getResource("/resources/lotofacil.txt").toURI());
-        arquivo = new File("lotofacil.txt");
-        FileReader reader = new FileReader(arquivo);
-        BufferedReader leitor = new BufferedReader(reader);
+        BufferedReader leitor = lerArquivo();
         jogos = leitor.readLine();
         jogos = jogos + "          " + leitor.readLine();
         while ((linha = leitor.readLine()) != null)
         {
             jogos = jogos + "\n" + linha + "          " + leitor.readLine();
         }
-
         return jogos + "\n";
+    }
 
+    private BufferedReader lerArquivo() throws FileNotFoundException
+    {
+        File arquivo;
+        //arquivo = new File(getClass().getResource("/resources/lotofacil.txt").toURI());
+        arquivo = new File("lotofacil.txt");
+        FileReader reader = new FileReader(arquivo);
+        BufferedReader leitor = new BufferedReader(reader);
+        return leitor;
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton buttonConferir;
+    private javax.swing.JButton buttonMaisJogados;
     private javax.swing.JButton buttonVisualizar;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
